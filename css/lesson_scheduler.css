@@ -1,0 +1,75 @@
+/* teble
+-------------------------------------------------------------- */
+.lesson_scheduler{
+	display: block;
+}
+
+/* lesson schadule
+----------------------------------------------- */
+table { border:0; border-spacing:0; border-collapse:collapse; width:95%; background:#fff; margin-bottom:20px; }
+th,td { font-size:12px; margin:0; padding:0; line-height:1.5; font-weight:normal; padding:5px !important; }
+th { font-size:14px; }
+
+.lesson_scheduler_table  { }
+.lesson_scheduler_table  th { color:#039; padding:10px 8px; border-bottom:2px solid #6678b1; }
+.lesson_scheduler_table  td {     color:#669; padding:9px 8px 0px 8px; }
+.lesson_scheduler_table  tbody tr:hover td { color:#009; background-color:lightskyblue; }
+
+
+/* Navigation
+-------------------------------------------------------------- */
+
+.navigation {
+	color: #888;
+	font-size: 14px;
+	line-height: 18px;
+	overflow: hidden;
+}
+.navigation a:link,
+.navigation a:visited {
+	color: #888;
+	text-decoration: none;
+}
+.navigation a:active,
+.navigation a:hover {
+	color: #ff4b33;
+}
+.nav-previous {
+	float: left;
+	width: 50%;
+}
+.nav-next {
+	float: right;
+	text-align: right;
+	width: 50%;
+}
+#nav-above {
+	margin: 0 0 18px 0;
+}
+#nav-above {
+	display: none;
+}
+.paged #nav-above,
+.single #nav-above {
+	display: block;
+}
+#nav-below {
+	margin-top: 20;
+}
+
+.lesson_scheduler_mobile{
+    display:block;
+    margin:10px;
+}
+
+.lesson_scheduler_mobile_input{
+    display:block;
+    margin:10px;
+}
+
+.lesson_scheduler_ui-tooltip {
+  padding: 10px 20px;
+  color: black;
+  background-color:white !important;
+  opacity:1.0;
+}
