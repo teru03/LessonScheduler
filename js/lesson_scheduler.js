@@ -1,20 +1,35 @@
 jQuery(function($){
-    $( "#lesson_datepicker" ).datepicker();
- 
-});
-
-jQuery( function($) {
-    $( "#dialog" ).dialog({
+    $('div.lesson_scheduler_mobile').click( function() {
+        var id =  $(this).attr('data-id');
+        var path = $(this).attr('data-path');
+        lesson_scheduler_detail_dialog($,id,path);
+    });
+    $( "#lesson_scheduler_dialog_main" ).dialog({
+/*    
         autoOpen: false,
         modal: true,
         buttons: {
-            Ok: function() {
+            "OK": function() {
                 $( this ).dialog( "close" );
             }
         }
-    });
-});
+*/
 
+      resizable: false,
+      height:140,
+      modal: true,
+      buttons: {
+        "全て削除": function() {
+          $( this ).dialog( "close" );
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+    $( "#lesson_datepicker" ).datepicker();
+});
+/*
 jQuery( function($) {
     $('tbody tr td[data-id]').addClass('clickable').click( function() {
         var id =  $(this).attr('data-id');
@@ -34,19 +49,10 @@ jQuery( function($) {
     } );
     
 });
-
-jQuery( function($) {
-    $('div .lesson_scheduler_mobile').click( function() {
-        var id =  $(this).attr('data-id');
-        var path = $(this).attr('data-path');
-        lesson_scheduler_detail_dialog($,id,path);
-    });
-    
-});
+*/
 
 function lesson_scheduler_detail_dialog($,id,path){
         var posturl = path+"/wp-admin/admin-ajax.php";
-
         $.ajax({ 
             async: false,
             data: {"action":"get_lesson_detail","data-id": id},
@@ -76,7 +82,7 @@ function lesson_scheduler_detail_dialog($,id,path){
                 $("#lesson_scheduler_dialog").children().remove();
                 $("#lesson_scheduler_dialog").append(str);
                 
-                $("#dialog").dialog("open");
+                $("#lesson_scheduler_dialog_main").dialog("open");
                 
             },
             error:  function(XMLHttpRequest, textStatus, errorThrown) {
