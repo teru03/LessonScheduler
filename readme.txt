@@ -34,7 +34,8 @@ If you need to customize UI adjust with your web size.
 == Changelog ==
 
 = 1.2.0
-Corresponded to sort of fields which are normal profile fields, optional fields and added fields to cimy plugin.
+Corresponded to select for display felds from normal profile fields, optional fields and added fields to cimy plugin.
+Corresponded to sort of display fields. 
 Corresponded to https.
 Provided template file for customize.
 Provided user function for customize.

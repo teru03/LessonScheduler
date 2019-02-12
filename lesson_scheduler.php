@@ -754,7 +754,7 @@ function lesson_scheduler_get_lesson_detail(){
     if( $lesson_place  ){
         $retjson['lesson_place'] = $lesson_place[0];
     }
-    /* lesson_descをキーとして、練習場所を取得 */
+    /* lesson_descをキーとして、備考を取得 */
     $lesson_desc = get_post_custom_values('lesson_schedule_field4',$id);
     if( $lesson_desc  ){
         $retjson['lesson_desc'] = $lesson_desc[0];
@@ -912,6 +912,101 @@ function lesson_scheduler_getAllDispJSON(){
         
 }
 
+
+/* カレントユーザーの全練習に対する出欠情報の取得＆出欠更新
+[Interface形式]
+$post [IN] スケジュール登録ページのPOST
+[Output形式]
+{
+   "custome post id":
+   {
+       "lesson_date":"練習日",
+       "lesson_place":"練習場所",
+       "lesson_time":"練習時間",
+       "status":"出欠状況",
+       "comment":"出欠に対するコメント"
+   }
+}
+-----------------------------------------------------------*/
+function lesson_scheduler_getAllLessonStatusJSON($post=null){
+
+    //1度に10件表示
+    $lesson_schedule_per_page = 10;
+    
+    //複数ページの場合に、選択されたページを取得
+    $paged = get_query_var('paged');
+    //過去ページを出さない場合は、昇順ソード
+    query_posts( "posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=meta_value&meta_key=lesson_schedule_field1" );
+    
+    // 練習分ループ 
+    $alllessonsjson = array();
+    while ( have_posts() ) {
+
+        $lesson = array();
+        
+        the_post(); 
+        
+        $cu = wp_get_current_user();
+        $id = get_the_ID();
+        if( is_null($post) == false ){
+
+            //送信ボタンが押されたかつ、その時のIDと同一ならば登録
+            if ($post['syuketu'.$id] != '' && strcmp( $post['id'.$id], $id) == 0 ) {
+                delete_post_meta( $id,  $cu->user_login ); 
+                update_post_meta( $id,  $cu->user_login, $post['syuketu'.$id]);
+                delete_post_meta( $id,  $cu->user_login."1" ); 
+                update_post_meta( $id,  $cu->user_login."1", $post['comment'.$id]);
+            }
+        }
+        //練習日を取得
+        $lesson_date = get_post_custom_values('lesson_schedule_field1');
+        if( $lesson_date  ){
+
+            //過去の練習を出さない場合はチェックする
+            if( strcmp(get_option('lesson_scheduler_cb_2'),'1') != 0 ){
+                //日付が未来かどうかをチェック
+                $lesson_date_unix = strtotime( $lesson_date[0] );
+                $today_unix = strtotime(  date('Y-m-d') );
+                //過去のものは表示しない
+                if( $lesson_date_unix < $today_unix )continue;
+            }
+
+            $lesson['lesson_date'] = $lesson_date[0];
+
+            //練習場所を取得
+            $lesson_place = get_post_custom_values('lesson_schedule_field2');
+            if( $lesson_place  ){
+                $lesson['lesson_place'] = $lesson_place[0];
+            }
+
+            //練習時間を取得
+            $lesson_time = get_post_custom_values('lesson_schedule_field3');
+            if( $lesson_time  ){
+                $lesson['lesson_time'] = $lesson_time[0];
+            }
+
+            //備考を取得
+            $remarks = get_post_custom_values('lesson_schedule_field4');
+            if( $remarks  ){
+                $lesson['remark'] = $remarks[0];
+            }else{
+                $lesson['remark'] = "";
+            }
+            
+            $lesson['status'] = get_post_meta($id, $cu->user_login, true);
+            $lesson['comment'] = get_post_meta($id, $cu->user_login."1", true);
+            
+        }
+        
+        $alllessonsjson[$id] = $lesson;
+    
+    }
+    
+//    var_dump($alllessonsjson);
+    return $alllessonsjson;
+
+}
+
 /* 全ユーザ情報をソートして取得する
 -----------------------------------------------------------*/
 function lesson_scheduler_getAllUsersJSON(){
@@ -922,11 +1017,7 @@ function lesson_scheduler_getAllUsersJSON(){
         $colnames[] = array( 'disp' => get_option('lesson_scheduler_disp_'.$i ),'sort' => get_option('lesson_scheduler_sort_'.$i ) ); 
     }
     
-    //表示対象カラムが一つも設定されていない場合はニックネームかつソートなし
-    
-    
-    
-    とする
+    //表示対象カラムが一つも設定されていない場合はニックネームかつソートなしとする
     if(empty($colnames)){
         $colnames[] = array( 'disp' => 'nickname', 'sort' => 'not_sort');
     }
@@ -1014,87 +1105,6 @@ function lesson_scheduler_getAllUsersJSON(){
  
 
     return $usersinfo; 
-
-}
-
-/* カレントユーザーの出欠取得＆更新
------------------------------------------------------------*/
-function lesson_scheduler_getAllLessonStatusJSON($post=null){
-
-    //1度に10件表示
-    $lesson_schedule_per_page = 10;
-    
-    //複数ページの場合に、選択されたページを取得
-    $paged = get_query_var('paged');
-    //過去ページを出さない場合は、昇順ソード
-    query_posts( "posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=meta_value&meta_key=lesson_schedule_field1" );
-    
-    // 練習分ループ 
-    $alllessonsjson = array();
-    while ( have_posts() ) {
-
-        $lesson = array();
-        
-        the_post(); 
-        
-        $cu = wp_get_current_user();
-        $id = get_the_ID();
-        if( is_null($post) == false ){
-
-            //送信ボタンが押されたかつ、その時のIDと同一ならば登録
-            if ($post['syuketu'.$id] != '' && strcmp( $post['id'.$id], $id) == 0 ) {
-                delete_post_meta( $id,  $cu->user_login ); 
-                update_post_meta( $id,  $cu->user_login, $post['syuketu'.$id]);
-                delete_post_meta( $id,  $cu->user_login."1" ); 
-                update_post_meta( $id,  $cu->user_login."1", $post['comment'.$id]);
-            }
-        }
-        //練習日を取得
-        $lesson_date = get_post_custom_values('lesson_schedule_field1');
-        if( $lesson_date  ){
-
-            //過去の練習を出さない場合はチェックする
-            if( strcmp(get_option('lesson_scheduler_cb_2'),'1') != 0 ){
-                //日付が未来かどうかをチェック
-                $lesson_date_unix = strtotime( $lesson_date[0] );
-                $today_unix = strtotime(  date('Y-m-d') );
-                //過去のものは表示しない
-                if( $lesson_date_unix < $today_unix )continue;
-            }
-
-            $lesson['lesson_date'] = $lesson_date[0];
-
-            //練習場所を取得
-            $lesson_place = get_post_custom_values('lesson_schedule_field2');
-            if( $lesson_place  ){
-                $lesson['lesson_place'] = $lesson_place[0];
-            }
-
-            //練習時間を取得
-            $lesson_time = get_post_custom_values('lesson_schedule_field3');
-            if( $lesson_time  ){
-                $lesson['lesson_time'] = $lesson_time[0];
-            }
-
-            //備考を取得
-            $remarks = get_post_custom_values('lesson_schedule_field4');
-            if( $remarks  ){
-                $lesson['remark'] = $remarks[0];
-            }else{
-                $lesson['remark'] = "";
-            }
-            
-            $lesson['status'] = get_post_meta($id, $cu->user_login, true);
-            $lesson['comment'] = get_post_meta($id, $cu->user_login."1", true);
-            
-        }
-        
-        $alllessonsjson[$id] = $lesson;
-    
-    }
-    
-//    var_dump($alllessonsjson);
-    return $alllessonsjson;
 
 }
 
