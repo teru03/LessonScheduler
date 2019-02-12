@@ -29,13 +29,15 @@ If you need to customize UI adjust with your web size.
 3. Shortcode for a page. 
 4. A page sample for Twentyten.
 5. A pages sample for mobile( ex.WPtouch ).
+6. Setting page for sort by fields.
 
 == Changelog ==
 
 = 1.2.0
-Provide template file for customize.
-Provide function for customize.
-Correspond to https.
+Corresponded to sort of fields which are normal profile fields, optional fields and added fields to cimy plugin.
+Corresponded to https.
+Provided template file for customize.
+Provided user function for customize.
 
 = 1.1.16
 Increase lesson place and lesson time items.

@@ -217,18 +217,7 @@ function disp_lesson_scheduler_pc(){
     
     //複数ページの場合に、選択されたページを取得
     $paged = get_query_var('paged');
-    //過去ページを出さない場合は、昇順ソード
-/*    
-    if( strcmp(get_option('lesson_scheduler_cb_2'),'1') != 0 ){
-        $today = date('Ymd');
-        $where = 'order=ASC';
-    }
-    else{
-        $where = 'order=DESC';
-    }
-        
-    query_posts( "posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=concat(right(meta_value,4),left(meta_value,2),mid(meta_value,4,2))&meta_key=lesson_schedule_field1&$where" );
-*/
+    
     //1度に10件表示
     $lesson_schedule_per_page = 10;
     
@@ -237,20 +226,8 @@ function disp_lesson_scheduler_pc(){
     query_posts( "posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=meta_value&meta_key=lesson_schedule_field1" );
 
     
-   global $wp_query;
+    global $wp_query;
        
-    //記事があれば投稿データをロード（表示はしない） 
-    /*
-     if ( have_posts() ){ 
-        the_post(); 
-    }
-    else{
-        echo _e('NOT FOUND','lesson-scheduler');
-    }
-
-    /* 投稿を巻き戻し *//*
-    rewind_posts();
-    */
 ?>
 <div class="lesson_scheduler" >
     
@@ -449,196 +426,6 @@ function lesson_scheduler_selectReplyByValue( $id, $value ){
 }
 
 
-/* 全ユーザー、練習日毎の状況をJSON形式でアウトプットする
------------------------------------------------------------*/
-function lesson_scheduler_getAllDispJSON(){
-
-
-    //1度に10件表示
-    $lesson_schedule_per_page = 10;
-    
-    //複数ページの場合に、選択されたページを取得
-    $paged = get_query_var('paged');
-    //過去ページを出さない場合は、昇順ソード
-    query_posts("posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=meta_value&meta_key=lesson_schedule_field1" );
-    
-
-    //ソートされたユーザ一覧を取得
-    $usersjson = lesson_scheduler_getAllUsersJSON();
-    
-    //ユーザ情報カラム名一覧の取得
-    $labels = lesson_scheduler_getUserColumnNames();
-   
-    //全カスタム投稿分ループ
-    while ( have_posts() ){
-
-        the_post();
-
-    
-        //練習日を取得
-        $lesson_date = get_post_custom_values('lesson_schedule_field1');
-        
-        if( $lesson_date  ){
-            //過去の練習を出さない場合はチェックする
-            if( strcmp(get_option('lesson_scheduler_cb_2'),'1') != 0 ){
-                //日付が未来かどうかをチェック
-                $lesson_date_unix = strtotime( $lesson_date[0] );
-                $today_unix = strtotime(  date('Y-m-d') );
-                //過去のものは表示しない
-                if( $lesson_date_unix < $today_unix )continue;
-            }
-        }
-
-       $datestr = strtotime($lesson_date[0]);
-       foreach( $usersjson as $key=>$user){        
-           $value = get_post_meta(get_the_ID(), $key, true);
-           $usersjson[$key] = array_merge($usersjson[$key],array("lesson_date-".$lesson_date[0]=>$value));
-       }
-       
-       $labels[] = $lesson_date[0];
-
-    }
-    
-    //ソート用の_idxがあれば削除
-    foreach($usersjson as $key=>$user){
-        foreach( $user as $key1=>$value){
-            if( strstr($key1,"_idx") ){
-                unset($user[$key1]);
-            }
-        }
-        $usersjson[$key] = $user;
-    }
-    
-    //echo "usersinfo = ".json_encode($usersjson);
-    
-    $usersinfo["body"] = $usersjson;
-    $usersinfo["header"] = $labels;
-    return $usersinfo;
-        
-}
-
-/* 全ユーザ情報をソートして取得する
------------------------------------------------------------*/
-function lesson_scheduler_getAllUsersJSON(){
-    //disp & sortカラム
-    $colnames = array();
-    for($i=1; $i<=lesson_scheduler_option_dispcolnum; $i++){    
-        if( get_option('lesson_scheduler_disp_'.$i ) == 'not_disp') continue;
-        $colnames[] = array( 'disp' => get_option('lesson_scheduler_disp_'.$i ),'sort' => get_option('lesson_scheduler_sort_'.$i ) ); 
-    }
-    
-
-//    echo 'colnames=';
-//    var_dump($colnames);
-       
-    $users = get_users_of_blog();
-
-    $usersjson =  array();    
-
-    //全ユーザー情報を取得    
-    foreach ( $users as $user ){       
-        $vals = array();
-//        foreach( $colnames as $colinfo ){
-        for( $i=0; $i<count($colnames); $i++ ){
-//            echo "colname = ".$colnames[$i]['disp']."<BR>";
-            $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
-            if( $idx ){
-                $colname = substr($colnames[$i]['disp'], 5);
-                if(!function_exists(get_cimyFieldValue))continue;
-//                echo "disp value = ". get_cimyFieldValue($user->user_id,$colname)."<BR>";
-                $vals[$colnames[$i]['disp']] = get_cimyFieldValue($user->user_id,$colname);
-                //dropdownの場合のソート用にidxを保持する
-                $labels = get_cimyFieldDropdownLabels($colname);
-                if(!is_null($labels)){
-                    foreach($labels as $keyidx=>$label){
-                        if($label == $vals[$colnames[$i]['disp']] ){
-//                            echo "colname = ".$colnames[$i]['disp']."_idx <BR>";
-//                            echo "disp value = ".$keyidx."\n";
-                            $vals[$colnames[$i]['disp'].'_idx'] = $keyidx;
-                            break;
-                        }
-                    }
-                }
-            }
-            else{
-//                echo "disp value = ". get_the_author_meta($colnames[$i]['disp'], $user->user_id)."<BR>";
-                $vals[$colnames[$i]['disp']] = get_the_author_meta($colnames[$i]['disp'], $user->user_id);
-           }
-        } 
-        $usersjson[$user->user_login] = $vals;
-    }
-    
-//    var_dump($usersjson);
-//    return $usersjson;
-
-    
-    $sortval = array();
-    for( $i=0; $i<count($colnames); $i++ ){
-        if( $colnames[$i]['sort'] == 'not_sort' )continue;
-        $sorttype = $colnames[$i]['sort'];
-        $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
-        if( $idx ){
-            $colname = substr($colnames[$i]['disp'], 5);
-            $labels = get_cimyFieldDropdownLabels($colname);
-            if(is_null($labels)){
-                $key = $colnames[$i]['disp'];
-            }
-            else{
-                $key = $colnames[$i]['disp'].'_idx';
-            }
-        }
-        else{
-            $key = $colnames[$i]['disp'];
-        }
-        $sortval[$key."-".$sorttype] = array();
-        foreach ( $usersjson as $user ){       
-            $sortval[$key."-".$sorttype][] = $user[$key];
-        }
-    }
-    
-//    echo "<BR>sort value<BR>";
-//    var_dump($sortval);
-
-    if( count($sortval) == 0 ){
-        return $usersjson;
-    }
-       
-    $args = array();
-    foreach( $sortval as $key=>$sort ){
-        $argvals = explode("-", $key);
-        $args[] = &$sort;
-        $args[] = ($argvals[1] == 'asc' ) ? SORT_ASC : SORT_DESC;
-        //$args[] = SORT_STRING; 
-    }
-    if( count($args) != 0 ){
-        //ソート対象を最後に追加
-        $args[] = &$usersjson;
-        
-//        echo "<BR>before args = <BR>";
-//        var_dump($args);
-        
-        //マルチソートを実行
-        $ret = call_user_func_array('array_multisort', $args );
-//        array_multisort($args[0],$args[1],$args[2] );
-
-//        echo "<BR>ret = ".$ret;
-//        echo "<BR>after args = <BR>";
-//        var_dump($args);
-        //ソート結果を取り出す
-        $usersinfo = array_pop($args);
-    }
-    else{
-        $usersnfo = $usersjson;
-    }
- 
-//    echo "<BR>after userinfo =  <BR>";
-//    echo json_encode($usersinfo);
-//    echo "<BR>";
-
-    return $usersinfo; 
-
-}
-
 /* cimyユーザーフィールドの選択項目 
 -----------------------------------------------------------*/
 function get_cimyFieldDropdownLabels($name){
@@ -659,9 +446,6 @@ function get_cimyFieldDropdownLabels($name){
                 return null;
             }
             
-//            echo "dropdown col<BR>";
-//            var_dump($field);
-    
             $labelsinfo = explode('/',$field['LABEL']);
     
             $labels = explode(',',$labelsinfo[1]);
@@ -674,6 +458,8 @@ function get_cimyFieldDropdownLabels($name){
     return null;   
 }
 
+/* ユーザーフィールドの選択項目 
+-----------------------------------------------------------*/
 function lesson_scheduler_getUserColumnNames(){
     //disp & sortカラム
     $colnames = array();
@@ -736,55 +522,6 @@ function lesson_scheduler_getUserColumnNames(){
 -----------------------------------------------------------*/
 function lesson_scheduler_dispAllUser(){
 
-/*
-    //全ユーザー情報の取得
-    $users = get_users_of_blog();
-    
-    foreach ( $users as $users ){
-
-        //ニックネーム出力
-        echo '<td>';
-        the_author_meta('nickname', $users->user_id);
-        echo 'さん</td>';
-
-        while ( have_posts() ){
-            the_post();
-        
-            //練習日を取得
-            $lesson_date = get_post_custom_values('lesson_schedule_field1');
-            if( $lesson_date  ){
-                //過去の練習を出さない場合はチェックする
-                if( get_option('lesson_scheduler_cb_2') != '1' ){
-                    // 日付が未来かどうかをチェック 
-                    $lesson_date_unix = strtotime( $lesson_date[0] );
-                    $today_unix = strtotime(  date('Y-m-d') );
-                    // 過去のものは表示しない 
-                    if( $lesson_date_unix < $today_unix )continue;
-                }
-            }
-
-            //出欠状況の出力
-            echo '<td>'; 
-            $value = get_post_meta(get_the_ID(), $users->user_login, true);
-            if( strcmp($value,"attend") == 0 ){
-                echo '●';    //出席
-            }elseif( strcmp($value,"absence") == 0 ){
-                echo '×';    //欠席
-            }elseif( strcmp($value,"late") == 0 ){
-                echo '△';    //遅刻
-            }elseif( strcmp($value,"early") == 0 ){
-                echo '□';    //早退
-            }elseif( strcmp($value,"undecided") == 0 ){
-                echo '？';    //未定
-            }else{
-                echo '-----';    //未選択
-            }
-            echo '</td>'; 
-        }
-        echo '</tr>';
-
-    }
-*/
     $usersinfo = lesson_scheduler_getAllDispJSON();
     echo '<thead><tr>';
     foreach ( $usersinfo["header"] as $label ){
@@ -995,6 +732,8 @@ function lesson_scheduler_post_where( $where, $query ) {
     
 }
 
+/* mobileにおける詳細表示ダイアログ用
+-----------------------------------------------------------*/
 add_action('wp_ajax_get_lesson_detail', 'lesson_scheduler_get_lesson_detail');
 function lesson_scheduler_get_lesson_detail(){
 
@@ -1070,10 +809,6 @@ function lesson_scheduler_dispScheduleDetail( $id ){
         }
 
         $comment = get_post_meta($id, $key."1", true);
-/*
-        $status = 'x';
-        $comment = '';
-*/
         $val = array();
         $val['status'] = $status;
         $val['comment'] = $comment;
@@ -1087,6 +822,203 @@ function lesson_scheduler_dispScheduleDetail( $id ){
     
 }
 
+/* ======================================================== */
+/* ユーザーカスタマイズ用ファンクション
+/* ======================================================== */
+
+
+/* 全ユーザー、練習日毎の状況をJSON形式でアウトプットする
+[Output形式]
+{
+   "header":["fieldname1","fieldname2","fieldname3"...,"yyyy/mm/dd","yyyy/mm/dd"...]
+   "body":
+   {
+       "user_loginname":
+       {
+           "fieldname1":"val1",
+           "fieldname2":"val2",
+           "fieldname3":"val3",
+           ･･･
+           "yyyy/mm/dd":"status",
+           "yyyy/mm/dd":"status",
+           "yyyy/mm/dd":"status"
+       }
+   }
+}
+-----------------------------------------------------------*/
+function lesson_scheduler_getAllDispJSON(){
+
+
+    //1度に10件表示
+    $lesson_schedule_per_page = 10;
+    
+    //複数ページの場合に、選択されたページを取得
+    $paged = get_query_var('paged');
+    //過去ページを出さない場合は、昇順ソード
+    query_posts("posts_per_page=$lesson_schedule_per_page&paged=$paged&post_type=lesson_schedules&orderby=meta_value&meta_key=lesson_schedule_field1" );
+    
+
+    //ソートされたユーザ一覧を取得
+    $usersjson = lesson_scheduler_getAllUsersJSON();
+    
+    //ユーザ情報カラム名一覧の取得
+    $labels = lesson_scheduler_getUserColumnNames();
+   
+    //全カスタム投稿分ループ
+    while ( have_posts() ){
+
+        the_post();
+
+    
+        //練習日を取得
+        $lesson_date = get_post_custom_values('lesson_schedule_field1');
+        
+        if( $lesson_date  ){
+            //過去の練習を出さない場合はチェックする
+            if( strcmp(get_option('lesson_scheduler_cb_2'),'1') != 0 ){
+                //日付が未来かどうかをチェック
+                $lesson_date_unix = strtotime( $lesson_date[0] );
+                $today_unix = strtotime(  date('Y-m-d') );
+                //過去のものは表示しない
+                if( $lesson_date_unix < $today_unix )continue;
+            }
+        }
+
+       $datestr = strtotime($lesson_date[0]);
+       foreach( $usersjson as $key=>$user){        
+           $value = get_post_meta(get_the_ID(), $key, true);
+           $usersjson[$key] = array_merge($usersjson[$key],array("lesson_date-".$lesson_date[0]=>$value));
+       }
+       
+       $labels[] = $lesson_date[0];
+
+    }
+    
+    //ソート用の_idxがあれば削除
+    foreach($usersjson as $key=>$user){
+        foreach( $user as $key1=>$value){
+            if( strstr($key1,"_idx") ){
+                unset($user[$key1]);
+            }
+        }
+        $usersjson[$key] = $user;
+    }
+    
+//    error_log( "usersinfo = ".json_encode($usersjson), 0);
+    
+    $usersinfo["body"] = $usersjson;
+    $usersinfo["header"] = $labels;
+    return $usersinfo;
+        
+}
+
+/* 全ユーザ情報をソートして取得する
+-----------------------------------------------------------*/
+function lesson_scheduler_getAllUsersJSON(){
+    //disp & sortカラム
+    $colnames = array();
+    for($i=1; $i<=lesson_scheduler_option_dispcolnum; $i++){    
+        if( get_option('lesson_scheduler_disp_'.$i ) == 'not_disp') continue;
+        $colnames[] = array( 'disp' => get_option('lesson_scheduler_disp_'.$i ),'sort' => get_option('lesson_scheduler_sort_'.$i ) ); 
+    }
+    
+    //表示対象カラムが一つも設定されていない場合はニックネームかつソートなし
+    
+    
+    
+    とする
+    if(empty($colnames)){
+        $colnames[] = array( 'disp' => 'nickname', 'sort' => 'not_sort');
+    }
+    
+
+    $users = get_users_of_blog();
+
+    $usersjson =  array();    
+
+    //全ユーザー情報を取得    
+    foreach ( $users as $user ){       
+        $vals = array();
+        for( $i=0; $i<count($colnames); $i++ ){
+            $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
+            if( $idx ){
+                $colname = substr($colnames[$i]['disp'], 5);
+                if(!function_exists(get_cimyFieldValue))continue;
+                $vals[$colnames[$i]['disp']] = get_cimyFieldValue($user->user_id,$colname);
+                //dropdownの場合のソート用にidxを保持する
+                $labels = get_cimyFieldDropdownLabels($colname);
+                if(!is_null($labels)){
+                    foreach($labels as $keyidx=>$label){
+                        if($label == $vals[$colnames[$i]['disp']] ){
+                            $vals[$colnames[$i]['disp'].'_idx'] = $keyidx;
+                            break;
+                        }
+                    }
+                }
+            }
+            else{
+                $vals[$colnames[$i]['disp']] = get_the_author_meta($colnames[$i]['disp'], $user->user_id);
+           }
+        } 
+        $usersjson[$user->user_login] = $vals;
+    }
+    
+    
+    $sortval = array();
+    for( $i=0; $i<count($colnames); $i++ ){
+        if( $colnames[$i]['sort'] == 'not_sort' )continue;
+        $sorttype = $colnames[$i]['sort'];
+        $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
+        if( $idx ){
+            $colname = substr($colnames[$i]['disp'], 5);
+            $labels = get_cimyFieldDropdownLabels($colname);
+            if(is_null($labels)){
+                $key = $colnames[$i]['disp'];
+            }
+            else{
+                $key = $colnames[$i]['disp'].'_idx';
+            }
+        }
+        else{
+            $key = $colnames[$i]['disp'];
+        }
+        $sortval[$key."-".$sorttype] = array();
+        foreach ( $usersjson as $user ){       
+            $sortval[$key."-".$sorttype][] = $user[$key];
+        }
+    }
+    
+    if( count($sortval) == 0 ){
+        return $usersjson;
+    }
+       
+    $args = array();
+    foreach( $sortval as $key=>$sort ){
+        $argvals = explode("-", $key);
+        $args[] = &$sort;
+        $args[] = ($argvals[1] == 'asc' ) ? SORT_ASC : SORT_DESC;
+    }
+    if( count($args) != 0 ){
+        //ソート対象を最後に追加
+        $args[] = &$usersjson;
+        
+        //マルチソートを実行
+        $ret = call_user_func_array('array_multisort', $args );
+
+        //ソート結果を取り出す
+        $usersinfo = array_pop($args);
+    }
+    else{
+        $usersnfo = $usersjson;
+    }
+ 
+
+    return $usersinfo; 
+
+}
+
+/* カレントユーザーの出欠取得＆更新
+-----------------------------------------------------------*/
 function lesson_scheduler_getAllLessonStatusJSON($post=null){
 
     //1度に10件表示
