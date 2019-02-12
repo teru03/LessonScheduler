@@ -115,7 +115,6 @@ function lesson_scheduler_userfields_select($num)
     //表示カラムをコンボボックス出力
     $chkname = "lesson_scheduler_disp_".$num;
     $optvalue = get_option($chkname);
-    echo $chkname."=".$optvalue."<BR>";
     
     $str = '<tr><td><select name="'.$chkname.'">';
     foreach( $default_cols as $key=>$dispname){
@@ -164,7 +163,6 @@ function lesson_scheduler_userfields_select($num)
     //ソート用コンボボックス生成
     $chkname = "lesson_scheduler_sort_".$num;
     $optvalue = get_option($chkname);
-    echo $chkname."=".$optvalue."<BR>";    
     $str = $str.'</select></td>';
     
     $str = $str.'<td><select name="lesson_scheduler_sort_'.$num.'" >';
