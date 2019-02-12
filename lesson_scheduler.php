@@ -214,8 +214,8 @@ function disp_lesson_scheduler($atts) {
         disp_lesson_scheduler_mobile();
     }
     else{
-//        disp_lesson_scheduler_pc();
-        disp_lesson_scheduler_mobile();
+        disp_lesson_scheduler_pc();
+//        disp_lesson_scheduler_mobile();
     }
     
     $buffer = ob_get_contents(); //バッファ内容返却
@@ -422,8 +422,8 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 <?php  if (  $wp_query->max_num_pages > 1 ) : ?>
     <br>
     <div id="nav-below" class="navigation">
-        <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older lessons' ,'lesson-scheduler' ) ); ?></div>
-        <div class="nav-next"><?php previous_posts_link( __( 'Newer lessons <span class="meta-nav">&rarr;</span>' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Newer lessons' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-next"><?php previous_posts_link( __( 'Older lessons <span class="meta-nav">&rarr;</span>' ,'lesson-scheduler' ) ); ?></div>
     </div><!-- #nav-below -->
     <br>
 <?php endif; ?>
@@ -464,10 +464,10 @@ function lesson_scheduler_selectReplyByValue( $id, $value ){
 }
 
 
-
 /* 全ユーザー、練習日毎の状況をJSON形式でアウトプットする
 -----------------------------------------------------------*/
 function lesson_scheduler_getAllDispJSON(){
+
 
     //1度に10件表示
     $lesson_schedule_per_page = 10;
@@ -486,8 +486,9 @@ function lesson_scheduler_getAllDispJSON(){
    
     //全カスタム投稿分ループ
     while ( have_posts() ){
-    
+
         the_post();
+
     
         //練習日を取得
         $lesson_date = get_post_custom_values('lesson_schedule_field1');
@@ -504,12 +505,9 @@ function lesson_scheduler_getAllDispJSON(){
         }
 
        $datestr = strtotime($lesson_date[0]);
-//        echo "date =".$datestr."<BR>";
        foreach( $usersjson as $key=>$user){        
-//            echo "userid =".$key;
-            $value = get_post_meta(get_the_ID(), $key, true);
-//            echo " value = ".$value."<BR>";
-            $usersjson[$key] = array_merge($usersjson[$key],array("lesson_date-".$lesson_date[0]=>$value));
+           $value = get_post_meta(get_the_ID(), $key, true);
+           $usersjson[$key] = array_merge($usersjson[$key],array("lesson_date-".$lesson_date[0]=>$value));
        }
        
        $labels[] = $lesson_date[0];
@@ -544,6 +542,7 @@ function lesson_scheduler_getAllUsersJSON(){
         $colnames[] = array( 'disp' => get_option('lesson_scheduler_disp_'.$i ),'sort' => get_option('lesson_scheduler_sort_'.$i ) ); 
     }
     
+
 //    echo 'colnames=';
 //    var_dump($colnames);
        
@@ -556,20 +555,20 @@ function lesson_scheduler_getAllUsersJSON(){
         $vals = array();
 //        foreach( $colnames as $colinfo ){
         for( $i=0; $i<count($colnames); $i++ ){
-//           echo "colname = ".$colnames[$i]['disp']."<BR>"
-           $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
+//            echo "colname = ".$colnames[$i]['disp']."<BR>";
+            $idx = strstr( $colnames[$i]['disp'], 'cimy:' );
             if( $idx ){
                 $colname = substr($colnames[$i]['disp'], 5);
                 if(!function_exists(get_cimyFieldValue))continue;
-//              echo "disp value = ". get_cimyFieldValue($user->user_id,$colname)."<BR>";
+//                echo "disp value = ". get_cimyFieldValue($user->user_id,$colname)."<BR>";
                 $vals[$colnames[$i]['disp']] = get_cimyFieldValue($user->user_id,$colname);
                 //dropdownの場合のソート用にidxを保持する
                 $labels = get_cimyFieldDropdownLabels($colname);
                 if(!is_null($labels)){
                     foreach($labels as $keyidx=>$label){
                         if($label == $vals[$colnames[$i]['disp']] ){
-//                          echo "colname = ".$colnames[$i]['disp']."_idx <BR>";
-//                          echo "disp value = ".$keyidx."\n";
+//                            echo "colname = ".$colnames[$i]['disp']."_idx <BR>";
+//                            echo "disp value = ".$keyidx."\n";
                             $vals[$colnames[$i]['disp'].'_idx'] = $keyidx;
                             break;
                         }
@@ -614,6 +613,10 @@ function lesson_scheduler_getAllUsersJSON(){
     
 //    echo "<BR>sort value<BR>";
 //    var_dump($sortval);
+
+    if( count($sortval) == 0 ){
+        return $usersjson;
+    }
        
     $args = array();
     foreach( $sortval as $key=>$sort ){
@@ -904,11 +907,11 @@ function lesson_scheduler_add_script() {
     //ビジュアルエディタがエラーになるためjQueryUIバージョンを挙げる
 //    if ( version_compare( $wp_version, '4.5', '>=' ) ) {    
     if ( version_compare( $wp_version, '4.1', '>=' ) ) {    
-        wp_register_script( 'jquery_core_js', 'http://code.jquery.com/ui/1.12.0/jquery-ui.js', false );
+        wp_register_script( 'jquery_core_js', '//code.jquery.com/ui/1.12.1/jquery-ui.js', false );
     }
     //過去バージョン互換のため残す
     else{
-        wp_register_script( 'jquery_core_js', 'http://code.jquery.com/ui/1.10.3/jquery-ui.js', false );
+        wp_register_script( 'jquery_core_js', '//code.jquery.com/ui/1.10.3/jquery-ui.js', false );
     }
     wp_register_script( 'lesson_scheduler_js', plugins_url('js/lesson_scheduler.js', __FILE__), false );
     wp_enqueue_script('jquery_core_js');
@@ -924,10 +927,10 @@ function lesson_scheduler_add_styles() {
     //ビジュアルエディタがエラーになるためjQueryUIバージョンを挙げる
 //    if ( version_compare( $wp_version, '4.5', '>=' ) ) {    
     if ( version_compare( $wp_version, '4.1', '>=' ) ) {    
-        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />'."\n";
+        echo '<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />'."\n";
     }
     else{
-        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />'."\n";
+        echo '<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />'."\n";
     }
 }
 add_action('wp_print_styles','lesson_scheduler_add_styles');
@@ -936,7 +939,7 @@ add_action('wp_print_styles','lesson_scheduler_add_styles');
 function lesson_scheduler_myplugin_admin_menu() {
 //    if ( version_compare( $wp_version, '4.5', '>=' ) ) {    
     if ( version_compare( $wp_version, '4.1', '>=' ) ) {    
-        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css" />'."\n";
+        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />'."\n";
     }
     else{
         echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />'."\n";
@@ -1034,7 +1037,10 @@ function lesson_scheduler_get_lesson_detail(){
     }
     
     $retjson['user_status'] = lesson_scheduler_dispScheduleDetail( $id );
+    //$retjson['user_status'] = array("teru03"=>array("status"=>"¥¥u25b3","comment"=>"xxx"));
     $retjson['id'] = $id;
+
+    error_log("retjson = ".json_encode($retjson),0);
     
     header('Content-Type: application/json charset=utf-8');
     echo json_encode($retjson);
@@ -1042,18 +1048,28 @@ function lesson_scheduler_get_lesson_detail(){
 }
 
 function lesson_scheduler_dispScheduleDetail( $id ){
-    //全ユーザー情報の取得
-    $users = get_users_of_blog();
+
+    //ソートされたユーザ一覧を取得
+    $usersjson = lesson_scheduler_getAllUsersJSON();
+
+    error_log( json_encode($usersjson), 0 );
 
     $user_status = array();        
     
-    foreach ( $users as $users ){
+    foreach( $usersjson as $key=>$users){        
+
+        $dispname = "";
+        foreach( $users as $userdisp ){
+            $dispname = $userdisp;
+            break;
+        }
+        error_log( "name = ".$dispname, 0 );
 
         //ニックネーム出力
-        $nicname =  get_the_author_meta('nickname', $users->user_id);
+        //$nicname = get_the_author_meta('nickname', $key);
 
         //出欠状況の出力
-        $value = get_post_meta($id, $users->user_login, true);
+        $value = get_post_meta($id, $key, true);
         if( strcmp($value,"attend") == 0 ){
             $status = '●';    //出席
         }elseif( strcmp($value,"absence") == 0 ){
@@ -1067,21 +1083,26 @@ function lesson_scheduler_dispScheduleDetail( $id ){
         }else{
             $status = '-----';    //未選択
         }
-        
 
-        $comment = get_post_meta($id, $users->user_login."1", true);
+        $comment = get_post_meta($id, $key."1", true);
+/*
+        $status = 'x';
+        $comment = '';
+*/
         $val = array();
         $val['status'] = $status;
         $val['comment'] = $comment;
-        $user_status[$nicname] = $val;
+        $user_status[$dispname] = $val;
         
     }
+
+    error_log(json_encode($user_status),0);
     
     return $user_status;
     
 }
 
-function lesson_scheduler_getAllLessonStatusJSON(){
+function lesson_scheduler_getAllLessonStatusJSON($post=null){
 
     //1度に10件表示
     $lesson_schedule_per_page = 10;
@@ -1101,6 +1122,16 @@ function lesson_scheduler_getAllLessonStatusJSON(){
         
         $cu = wp_get_current_user();
         $id = get_the_ID();
+        if( is_null($post) == false ){
+
+            //送信ボタンが押されたかつ、その時のIDと同一ならば登録
+            if ($post['syuketu'.$id] != '' && strcmp( $post['id'.$id], $id) == 0 ) {
+                delete_post_meta( $id,  $cu->user_login ); 
+                update_post_meta( $id,  $cu->user_login, $post['syuketu'.$id]);
+                delete_post_meta( $id,  $cu->user_login."1" ); 
+                update_post_meta( $id,  $cu->user_login."1", $post['comment'.$id]);
+            }
+        }
         //練習日を取得
         $lesson_date = get_post_custom_values('lesson_schedule_field1');
         if( $lesson_date  ){

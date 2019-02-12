@@ -41,10 +41,10 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     <!-- タイトルの表示 -->
     <h3><?php _e('schedule','lesson-scheduler') ?></h3>
     <hr>
-   <!-- 練習ループ -->
+    <!-- 練習ループ -->
     <?php while ( have_posts() ){
     
-         the_post();
+        the_post();
 
         $cu = wp_get_current_user();
 
@@ -121,8 +121,8 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 if ( $wp_query->max_num_pages > 1 ) : ?>
     <BR>
     <div id="nav-below" class="navigation">
-        <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older lessons' ,'lesson-scheduler' ) ); ?></div>
-        <div class="nav-next"><?php previous_posts_link( __( 'Newer lessons <span class="meta-nav">&rarr;</span>' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Newer lessons' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-next"><?php previous_posts_link( __( 'Older lessons <span class="meta-nav">&rarr;</span>' ,'lesson-scheduler' ) ); ?></div>
     </div><!-- #nav-below -->
     <BR>
 <?php endif; ?>
@@ -136,13 +136,18 @@ if ( $wp_query->max_num_pages > 1 ) : ?>
 
 /* 出席者表示
 -----------------------------------------------------------*/
-function lesson_scheduler_dispAttendUser(){
+function lesson_scheduler_dispAttendUser($id=null){
 
     $attend = 0;
     $absence = 0;
     $late = 0;
     $early = 0;
     $undecided = 0;
+
+    // check of parameter
+    if( $id == null ){
+        $id = get_the_ID();
+    }
     
     //全ユーザー情報の取得
     $users = get_users_of_blog();
@@ -150,7 +155,7 @@ function lesson_scheduler_dispAttendUser(){
     foreach ( $users as $users ){
 
         //出欠状況の出力
-        $value = get_post_meta(get_the_ID(), $users->user_login, true);
+        $value = get_post_meta($id, $users->user_login, true);
         if( strcmp($value,"attend") == 0 ){
             $attend++;    //出席
         }elseif( strcmp($value,"absence") == 0 ){

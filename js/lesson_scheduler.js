@@ -1,55 +1,23 @@
 jQuery(function($){
-    $('div.lesson_scheduler_mobile').click( function() {
+    $('.lesson_scheduler_mobile').click( function() {
         var id =  $(this).attr('data-id');
         var path = $(this).attr('data-path');
         lesson_scheduler_detail_dialog($,id,path);
     });
     $( "#lesson_scheduler_dialog_main" ).dialog({
-/*    
         autoOpen: false,
+        resizable: false,
+        height:"auto",
         modal: true,
-        buttons: {
-            "OK": function() {
-                $( this ).dialog( "close" );
-            }
-        }
-*/
-
-      resizable: false,
-      height:140,
-      modal: true,
-      buttons: {
-        "全て削除": function() {
-          $( this ).dialog( "close" );
-        },
-        Cancel: function() {
-          $( this ).dialog( "close" );
-        }
-      }
+        buttons: [{
+          text: "OK",
+          click: function() {
+            $( this ).dialog( "close" );
+          }
+        }]
     });
     $( "#lesson_datepicker" ).datepicker();
 });
-/*
-jQuery( function($) {
-    $('tbody tr td[data-id]').addClass('clickable').click( function() {
-        var id =  $(this).attr('data-id');
-        var path = $(this).attr('data-path');
-        lesson_scheduler_detail_dialog($,id,path);
-
-    }).find('a').hover( function() {
-        $(this).parents('tr').unbind('click');
-    }, function() {
-        $(this).parents('tr').click( function() {
-        });
-    });
-    
-    $('tbody tr').tooltip( {
-        track: true,
-        tooltipClass: 'lesson_scheduler_ui-tooltip'
-    } );
-    
-});
-*/
 
 function lesson_scheduler_detail_dialog($,id,path){
         var posturl = path+"/wp-admin/admin-ajax.php";
@@ -61,13 +29,13 @@ function lesson_scheduler_detail_dialog($,id,path){
             dataType: 'json',
             success: function(data) {
                 
-                var str = "<p>練習場所:"+data['lesson_place']+"</p>";
-                str = str + "<p>練習日:"+data['lesson_date']+"</p>";
-                str = str + "<p>練習時間:"+data['lesson_time']+"</p>";
+                var str = "<p>練習場所:"+data['lesson_place']+"<BR>";
+                str = str + "練習日:"+data['lesson_date']+"<BR>";
+                str = str + "練習時間:"+data['lesson_time']+"</p>";
                 if( typeof data['lesson_desc'] !== 'undefined' ){
                     str = str + "<p>備考:"+data['lesson_desc']+"</p>";
                 }
-                str = str + "<div class='lesson_scheduler_table'>";
+                str = str + "<p><div class='lesson_scheduler_table'>";
                 str = str + "<table><thead><tr><td>名前</td><td>出欠</td><td>コメント</td></tr></thead>";
                 var user_status = data['user_status'];
                 for( var key in user_status){
@@ -77,7 +45,7 @@ function lesson_scheduler_detail_dialog($,id,path){
                     str = str + "</tr>";
                 }
                 str = str + "</tbody></table>";
-                str = str + "</div>";
+                str = str + "</div></p>";
                
                 $("#lesson_scheduler_dialog").children().remove();
                 $("#lesson_scheduler_dialog").append(str);
@@ -86,7 +54,7 @@ function lesson_scheduler_detail_dialog($,id,path){
                 
             },
             error:  function(XMLHttpRequest, textStatus, errorThrown) {
-                alert("ng:"+textStatus);
+                alert("ng:"+textStatus+" "+errorThrown);
             }
         });
     

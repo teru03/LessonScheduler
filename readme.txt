@@ -3,7 +3,7 @@ Contributors: Teruo Morimoto
 Tags: lesson, practice, WindBand, Orchestra, footballTeam,練習,出欠
 Requires at least: 3.0
 Tested up to: 4.5.1
-Stable tag: 1.1.16
+Stable tag: 1.2.0
 License: GPLv2
 
 Just another lesson schedule management plugin. Simple look and feel.
@@ -18,6 +18,8 @@ You can register the lesson day of your club(music,sports,etc). Member can ident
 1. Upload the entire `lesson-scheduler` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Add New Page and Reg a ShortCode [lesson scheduler] or [lesson_shceduler].
+If you need to customize UI adjust with your web size.
+3. Copy template-lessonscheduler.php to themes folder.
 
 
 == Screenshots ==
@@ -29,6 +31,11 @@ You can register the lesson day of your club(music,sports,etc). Member can ident
 5. A pages sample for mobile( ex.WPtouch ).
 
 == Changelog ==
+
+= 1.2.0
+Provide template file for customize.
+Provide function for customize.
+Correspond to https.
 
 = 1.1.16
 Increase lesson place and lesson time items.
