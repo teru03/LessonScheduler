@@ -5,7 +5,7 @@ Plugin URI:
 Description: Just another lesson schedule manegement plugin. Simple UI and look.
 Author: Teruo Morimoto
 Author URI: http://stepxstep.net/
-Version: 1.1.16
+Version: 1.2.0
 */
 
 /*  Copyright 2013 Teruo Mormoto (email : terusun at gmail.com)
@@ -23,10 +23,10 @@ Version: 1.1.16
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-   //アイテム数定義
-   define("lesson_scheduler_option_max",50);
+    //アイテム数定義
+    define("lesson_scheduler_option_max",50);
     //表示用ユーザープロフィール数
-   define("lesson_scheduler_option_dispcolnum",3);
+    define("lesson_scheduler_option_dispcolnum",3);
    
     //設定画面処理用ファイル読み込み
     include_once dirname( __FILE__ ) . '/lesson_scheduler_options.php';
@@ -77,20 +77,6 @@ function create_lesson_schedules(){
             'register_meta_box_cb' => 'lesson_schedules_meta_box'     // カスタムフィールドを使う
         );
     }
-    /*
-
-        $args = array(
-            'labels' => $labels,
-            'public' => true,
-            'capability_type' => 'post',
-            'hierarchical' => false,    
-            'has_archive' => true,        
-            'supports' => array(
-                'slug'
-            ),
-            'register_meta_box_cb' => 'lesson_schedules_meta_box'     // カスタムフィールドを使う
-        );
-    */
     register_post_type('lesson_schedules', $args);
     
 }
@@ -215,7 +201,6 @@ function disp_lesson_scheduler($atts) {
     }
     else{
         disp_lesson_scheduler_pc();
-//        disp_lesson_scheduler_mobile();
     }
     
     $buffer = ob_get_contents(); //バッファ内容返却
