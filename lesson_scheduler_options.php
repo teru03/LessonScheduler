@@ -186,13 +186,9 @@ function lesson_scheduler_get_userfields(){
 
    if(function_exists(wp_get_user_contact_methods)){
        $fields = wp_get_user_contact_methods(null);
-//       echo "userfields1 = <BR>";
-//       var_dump($fields);
    }
    else{
        $fields = _wp_get_user_contactmethods(null);
-//       echo "userfields2 = <BR>";
-//       var_dump($fields);
    }
   
    return $fields;
