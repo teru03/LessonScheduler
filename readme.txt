@@ -17,19 +17,22 @@ You can register the lesson day of your club(music,sports,etc). Member can ident
 
 1. Upload the entire `lesson-scheduler` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Add New Page and Reg a ShortCode [lesson scheduler] or [lesson_shceduler].
+3. Add new page and reg a ShortCode [lesson scheduler] or [lesson_shceduler].
 If you need to customize UI adjust with your web size.
 3. Copy template-lessonscheduler.php to themes folder.
+4. Add new page and select a template 'lesson scheduler'.
 
 
 == Screenshots ==
 
-1. Setting Lesson Place,Time,etc.
-2. Add new post Lesson Schedule.
-3. Shortcode for a page. 
-4. A page sample for Twentyten.
-5. A pages sample for mobile( ex.WPtouch ).
-6. Setting page for sort by fields.
+1. Setting Lesson Place.
+2. Setting Lesson Time.
+3. Setting oprion, display column and sort type.
+4. Add new post Lesson Schedule.
+5. Setting shortcode for a page. 
+6. Setting template for a page. 
+7. A page sample for TwentySixteen by short code.
+8. A page sample for TwentySixteen by template.
 
 == Changelog ==
 
