@@ -644,6 +644,7 @@ add_action('wp_print_scripts','lesson_scheduler_add_script');
 /* cssの読み込み
 -----------------------------------------------------------*/
 function lesson_scheduler_add_styles() {
+    global $wp_version;
     wp_register_style( 'lesson_scheduler_css', plugins_url('css/lesson_scheduler.css', __FILE__) );
     wp_enqueue_style('lesson_scheduler_css');
     //ビジュアルエディタがエラーになるためjQueryUIバージョンを挙げる
@@ -659,6 +660,7 @@ add_action('wp_print_styles','lesson_scheduler_add_styles');
 
 // 管理メニュー初期設定にフック
 function lesson_scheduler_myplugin_admin_menu() {
+    global $wp_version;
 //    if ( version_compare( $wp_version, '4.5', '>=' ) ) {    
     if ( version_compare( $wp_version, '4.1', '>=' ) ) {    
         echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />'."\n";

@@ -11,14 +11,14 @@
     //show_admin_bar(false);
     $mobileflg = lesson_scheduler_chk_mobile() ? "active" : "none"; 
     $pcflg = lesson_scheduler_chk_mobile() ? "none" : "active"; 
-    //echo "mobile = ".$mobileflg;
-    //echo " pc = ".$pcflg;
 ?>
 
+<!-- モバイル向けのダイアログ表示用 -->
 <div id="lesson_scheduler_dialog_main" title="練習">
     <p id="lesson_scheduler_dialog"></p>
 </div>
 
+<!-- モバイル版の表示 --> 
 <div class="wrap">
     <div class="lesson_scheduler" style="display:<?php echo $mobileflg; ?>;" >
         <form action="#" method="POST">
