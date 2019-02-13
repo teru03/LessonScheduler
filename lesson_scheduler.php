@@ -384,8 +384,8 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 <?php  if (  $wp_query->max_num_pages > 1 ) : ?>
     <br>
     <div id="nav-below" class="navigation">
-        <div class="nav-next"><?php previous_post_link( '<span class="meta-nav">&larr;</span>'.__( 'Older lessons' ,'lesson-scheduler' ) ); ?></div>
-        <div class="nav-previous"><?php next_posts_link( __( 'Newer lessons', 'lesson-scheduler' ).'<span class="meta-nav">&rarr;</span>' ); ?></div>
+        <div class="nav-previous"><?php previous_posts_link( '<span class="meta-nav">&larr;</span>'.__( 'Older lessons' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-next"><?php next_posts_link( __( 'Newer lessons', 'lesson-scheduler' ).'<span class="meta-nav">&rarr;</span>' ); ?></div>
     </div><!-- #nav-below -->
     <br>
 <?php endif; ?>
