@@ -663,10 +663,10 @@ function lesson_scheduler_myplugin_admin_menu() {
     global $wp_version;
 //    if ( version_compare( $wp_version, '4.5', '>=' ) ) {    
     if ( version_compare( $wp_version, '4.1', '>=' ) ) {    
-        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />'."\n";
+        echo '<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />'."\n";
     }
     else{
-        echo '<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />'."\n";
+        echo '<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />'."\n";
     }
 }
 add_action('admin_head', 'lesson_scheduler_myplugin_admin_menu');
