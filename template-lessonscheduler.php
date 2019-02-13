@@ -151,8 +151,8 @@
 <?php  if (  $wp_query->max_num_pages > 1 ) : ?>
     <br>
     <div id="nav-below" class="navigation">
-        <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Newer lessons' ,'lesson-scheduler' ) ); ?></div>
-        <div class="nav-next"><?php previous_posts_link( __( 'Older lessons <span class="meta-nav">&rarr;</span>' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-previous"><?php previous_posts_link( '<span class="meta-nav">&larr;</span>'.__( 'Older lessons' ,'lesson-scheduler' ) ); ?></div>
+        <div class="nav-next"><?php next_posts_link( __( 'Newer lessons', 'lesson-scheduler' ).'<span class="meta-nav">&rarr;</span>' ); ?></div>
     </div><!-- #nav-below -->
     <br>
 <?php endif; ?>
