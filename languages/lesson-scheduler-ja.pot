@@ -57,10 +57,10 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-msgid "<span class=\"meta-nav\">&larr;</span> Older lessons"
+msgid "Older lessons"
 msgstr ""
 
-msgid "Newer lessons <span class=\"meta-nav\">&rarr;</span>"
+msgid "Newer lessons"
 msgstr ""
 
 msgid "Could not update post in the database"
@@ -90,3 +90,5 @@ msgstr ""
 msgid "use the mobile phone mode"
 msgstr ""
 
+msgid "set display & sort columns"
+msgstr ""
