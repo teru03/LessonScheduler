@@ -9,8 +9,12 @@
 <?php get_header(); ?>
 <?php 
     //show_admin_bar(false);
-    $mobileflg = lesson_scheduler_chk_mobile() ? "active" : "none"; 
-    $pcflg = lesson_scheduler_chk_mobile() ? "none" : "active"; 
+    //モバイル、PCを切り替える場合
+    //$mobileflg = lesson_scheduler_chk_mobile() ? "active" : "none"; 
+    //$pcflg = lesson_scheduler_chk_mobile() ? "none" : "active"; 
+    //必ずモバイル版でだす
+    $mobileflg = "active";
+    $pcflg = "none";
 ?>
 
 <!-- モバイル向けのダイアログ表示用 -->
@@ -18,8 +22,8 @@
     <p id="lesson_scheduler_dialog"></p>
 </div>
 
-<!-- モバイル版の表示 --> 
 <div class="wrap">
+    <!-- モバイル版の表示 --> 
     <div class="lesson_scheduler" style="display:<?php echo $mobileflg; ?>;" >
         <form action="#" method="POST">
         <!-- タイトルの表示 -->
@@ -53,6 +57,7 @@
         </form>
     </div>    
     
+    <!-- PC版の表示 --> 
     <div class="lesson_scheduler" style="display:<?php echo $pcflg; ?>" >
        <form action="#" method="POST">
        <div class="tablelesson-2">
