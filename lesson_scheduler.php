@@ -245,14 +245,6 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 <form action="<?php echo $myurl; ?>" method="POST">
 <?php if(  is_user_logged_in() ) : ?>
     <h3><?php _e('your status','lesson-scheduler'); ?></h3>
-    <?php
-    //
-    echo '<span style="font-size:0.9em">●:'.__('attend','lesson-scheduler').' ';
-    echo '×:'.__('absence','lesson-scheduler').' ';
-    echo '△:'.__('late','lesson-scheduler').' ';
-    echo '□:'.__('early','lesson-scheduler').' ';
-    echo '－:'.__('undecided','lesson-scheduler').'</span>';
-    ?>
 <?php else : ?>
     <h3><?php _e('schedule','lesson-scheduler'); ?></h3>
 <?php endif; ?>
@@ -366,6 +358,14 @@ $myurl  = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 
     <?php if(  is_user_logged_in() ) : ?>
         <h3><?php _e('others status','lesson-scheduler'); ?></h3>
+        <?php
+        //
+        echo '<span style="font-size:0.9em">●:'.__('attend','lesson-scheduler').' ';
+        echo '×:'.__('absence','lesson-scheduler').' ';
+        echo '△:'.__('late','lesson-scheduler').' ';
+        echo '□:'.__('early','lesson-scheduler').' ';
+        echo '－:'.__('undecided','lesson-scheduler').'</span>';
+        ?>
         <table class="lesson_scheduler_table">
             <?php
                 //全ユーザーの出欠状況を表示

@@ -2,7 +2,7 @@
 Contributors: Teruo Morimoto
 Tags: lesson, practice, WindBand, Orchestra, footballTeam,練習,出欠
 Requires at least: 3.0
-Tested up to: 4.5.1
+Tested up to: 4.9.
 Stable tag: 1.2.0
 License: GPLv2
 
