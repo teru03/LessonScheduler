@@ -11,7 +11,7 @@ Just another lesson schedule management plugin. Simple look and feel.
 == Description ==
 You can register the lesson day of your club(music,sports,etc). Member can identify the lesson schedule of other members and register attendance or absence.
 
-[日本語の説明](http://stepxstep.net/?page_id=1540  "Documentation in Japanese")
+[日本語の説明](https://github.com/teru03/lesson-scheduler/wiki  "Documentation in Japanese")
 
 == Installation ==
 
